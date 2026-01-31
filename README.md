@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# FLOWGRAVITY Portfolio
+
+Experience web development through an interactive 3D lens. This project features a custom gravity modulator, real-time particle systems, and a live project explorer.
 
 ## Getting Started
 
