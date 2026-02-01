@@ -88,10 +88,10 @@ export default function Specialties() {
                 <div className="absolute inset-0 bg-gradient-to-t from-[#030303] via-[#030303]/40 to-transparent z-20" />
               </div>
 
-              {/* Imagen/Icono flotante si existe - AHORA ESTRUCTURA DE CAPAS: VIDEO (z-0) -> IMAGEN (z-10) -> TEXTO (z-30) */}
+              {/* Imagen/Icono flotante si existe - OCULTO EN MÓVIL PARA RENDIMIENTO */}
               {item.image && (
                 <motion.div
-                  className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center overflow-hidden"
+                  className="hidden md:flex absolute inset-0 z-10 pointer-events-none items-center justify-center overflow-hidden"
                   style={{
                     maskImage: "radial-gradient(circle, black 40%, transparent 80%)",
                     WebkitMaskImage: "radial-gradient(circle, black 40%, transparent 80%)",
