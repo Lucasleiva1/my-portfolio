@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Points, PointMaterial, OrbitControls } from "@react-three/drei";
+import { Points, PointMaterial } from "@react-three/drei";
 import { motion, AnimatePresence } from "framer-motion";
 import * as THREE from "three";
 import { Instagram, Facebook, ArrowRight } from "lucide-react";
@@ -112,22 +112,15 @@ export default function HeroGravity() {
 
 
   return (
-    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0 pointer-events-none md:pointer-events-auto" style={{ touchAction: 'pan-y' }}>
+    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0" style={{ touchAction: 'pan-y' }}>
       
-      {/* CAPA 3D (El Canvas de React Three Fiber) */}
-      <div className="absolute inset-0 z-0">
+      {/* CAPA 3D (El Canvas de React Three Fiber) - TOTALMENTE PASIVA */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
           <color attach="background" args={['#030303']} />
           <ambientLight intensity={0.5} />
           {/* Pasamos el estado de la gravedad al sistema 3D */}
           <HeroParticles gravityValue={gravity} isMobile={isMobile} />
-          {/* OrbitControls opcional: permite al usuario rotar la escena con el mouse */}
-          <OrbitControls 
-            enableZoom={false} 
-            autoRotate={!isMobile} 
-            autoRotateSpeed={0.5}
-            enableRotate={!isMobile} // También desactivamos rotación manual en celular
-          />
         </Canvas>
       </div>
 
