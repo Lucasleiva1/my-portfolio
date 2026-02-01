@@ -32,107 +32,7 @@ function createCircleTexture() {
   return texture;
 }
 
-// --- COMPONENTE DEL SISTEMA DE PARTÍCULAS ---
-// Este componente vive dentro del Canvas 3D
-function ParticleSystem({ gravityValue }: { gravityValue: number }) {
-  const ref = useRef<THREE.Points>(null!);
-  const count = 6000; // Aumentamos a 6000 para más densidad
-
-  // Creamos posiciones, velocidades y una nueva variable: "masa" (fricción)
-  const [positions, velocities, masses] = useMemo(() => {
-    const pos = new Float32Array(count * 3);
-    const vel = new Float32Array(count * 3);
-    const mass = new Float32Array(count); // Cada partícula tiene su propia "física"
-
-    for (let i = 0; i < count; i++) {
-      // 1. DISTRIBUCIÓN ESFÉRICA (Para evitar la forma de caja)
-      // Algoritmo de distribución uniforme en esfera
-      const phi = Math.acos(-1 + (2 * i) / count);
-      const theta = Math.sqrt(count * Math.PI) * phi;
-      const radius = 10 + Math.random() * 10; // Radio variable (10 a 20)
-
-      pos[i * 3] = radius * Math.cos(theta) * Math.sin(phi);     // x
-      pos[i * 3 + 1] = radius * Math.sin(theta) * Math.sin(phi); // y
-      pos[i * 3 + 2] = radius * Math.cos(phi);                   // z
-
-      // 2. VARIACIÓN DE MASA (Evita que se junten en líneas)
-      // Unas partículas son más pesadas y reaccionan más rápido que otras
-      mass[i] = 0.5 + Math.random() * 1.5; 
-
-      vel[i * 3] = 0;
-      vel[i * 3 + 1] = 0;
-      vel[i * 3 + 2] = 0;
-    }
-    return [pos, vel, mass];
-  }, []);
-
-  // Usamos la textura circular
-  const circleTexture = useMemo(() => createCircleTexture(), []);
-
-  // El bucle de animación (corre a 60fps en la GPU)
-  useFrame((state) => {
-    if (!ref.current || !ref.current.geometry.attributes.position) return;
-
-    const positionAttribute = ref.current.geometry.attributes.position;
-
-    for (let i = 0; i < count; i++) {
-      const iy = i * 3 + 1;
-      
-      // APLICAR FÍSICA: La velocidad vertical cambia según el slider de gravedad
-      // Aplicar gravedad multiplicada por la masa individual
-      // Esto hace que unas caigan más lento que otras, rompiendo el "cuadrado"
-      velocities[iy] += gravityValue * 0.005 * masses[i];
-      
-      // Aplicar una pequeña resistencia al aire (drag) para que no sea lineal
-      velocities[iy] *= 0.98;
-
-      // Actualizar posiciones (X y Z también para movimiento sutil si tuvieran velocidad)
-      positionAttribute.array[i * 3] += velocities[i * 3];
-      positionAttribute.array[iy] += velocities[iy];
-      positionAttribute.array[i * 3 + 2] += velocities[i * 3 + 2];
-
-      // 3. RESET ORGÁNICO
-      // Límite más amplio para dar espacio
-      const limit = 25; 
-      
-      if (Math.abs(positionAttribute.array[iy]) > limit) {
-         // Si sale por arriba o abajo, la mandamos al lado opuesto
-         // pero con un "offset" aleatorio considerable para evitar líneas horizontales
-         const offset = Math.random() * 10;
-         positionAttribute.array[iy] = gravityValue > 0 ? -limit - offset : limit + offset;
-         
-         // Resetear velocidad pero mantener inercia aleatoria pequeña
-         velocities[iy] = 0; 
-         
-         // Opcional: Reasignar posición X/Z aleatoria al resetear para más variedad
-         // const phi = Math.random() * Math.PI * 2;
-         // const r = 10 + Math.random() * 10;
-         // positionAttribute.array[i * 3] = r * Math.cos(phi);
-         // positionAttribute.array[i * 3 + 2] = r * Math.sin(phi);
-      }
-    }
-    // Decirle a Three.js que las posiciones han cambiado y necesita redibujar
-    positionAttribute.needsUpdate = true;
-    
-    // Rotación lenta de toda la nube para más profundidad
-    ref.current.rotation.y += 0.001;
-  });
-
-  return (
-    <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
-      <PointMaterial
-        transparent
-        // map={circleTexture} // Comentado si da problemas de carga, pero recomendado
-        alphaTest={0.01}
-        color="#a3e635" // Verde neón lime-400
-        size={0.15} // Tamaño ajustado para textura suave
-        sizeAttenuation={true}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending} // Hace que brillen al superponerse
-      />
-    </Points>
-  );
-}
+import HeroParticles from "./HeroParticles";
 
 // --- COMPONENTE PRINCIPAL DEL HERO ---
 export default function HeroGravity() {
@@ -140,12 +40,24 @@ export default function HeroGravity() {
   // Estado del slider: -1 (Caída máxima), 0 (Neutro), 1 (Elevación máxima)
   const [gravity, setGravity] = useState(0.2); 
   const [showHint, setShowHint] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const animationRef = useRef<number | null>(null);
   const userInteractedRef = useRef(false);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowHint(false), 4000);
-    return () => clearTimeout(timer);
+    
+    // Detección de celular
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkMobile);
+    };
   }, []);
 
   useEffect(() => {
@@ -200,7 +112,7 @@ export default function HeroGravity() {
 
 
   return (
-    <section className="relative h-screen w-full bg-[#030303] overflow-hidden">
+    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0">
       
       {/* CAPA 3D (El Canvas de React Three Fiber) */}
       <div className="absolute inset-0 z-0">
@@ -208,9 +120,14 @@ export default function HeroGravity() {
           <color attach="background" args={['#030303']} />
           <ambientLight intensity={0.5} />
           {/* Pasamos el estado de la gravedad al sistema 3D */}
-          <ParticleSystem gravityValue={gravity} />
+          <HeroParticles gravityValue={gravity} isMobile={isMobile} />
           {/* OrbitControls opcional: permite al usuario rotar la escena con el mouse */}
-          <OrbitControls enableZoom={false} autoRotate autoRotateSpeed={0.5} />
+          <OrbitControls 
+            enableZoom={false} 
+            autoRotate={!isMobile} 
+            autoRotateSpeed={0.5}
+            enableRotate={!isMobile} // También desactivamos rotación manual en celular
+          />
         </Canvas>
       </div>
 

@@ -31,7 +31,7 @@ export default function LiveProjectExplorer() {
   const { t } = useLanguage();
   
   return (
-    <section id="proyectos" className="py-24 bg-[#030303] min-h-screen">
+    <section className="py-24 bg-[#030303] min-h-screen">
       <div className="container mx-auto px-6">
         
         {/* Header de la Sección */}

@@ -60,7 +60,7 @@ export default function Contact() {
   ];
 
   return (
-    <footer id="contacto" className="relative bg-[#030303] pt-24 pb-8 overflow-hidden border-t border-white/5">
+    <footer className="relative bg-[#030303] pt-24 pb-8 overflow-hidden border-t border-white/5">
       {/* Glow de fondo */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-lime-500/5 blur-[120px] rounded-full pointer-events-none" />
 

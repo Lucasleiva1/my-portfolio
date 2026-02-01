@@ -1,10 +1,14 @@
 "use client";
 import { motion } from "framer-motion";
 import { Code2, MonitorSmartphone, BrainCircuit, Zap } from "lucide-react";
+import Image from "next/image";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 export default function Specialties() {
   const { t } = useLanguage();
+  
+  // Envolviendo Image de Next.js para animaciones
+  const MotionImage = motion(Image);
   
   const specialties = [
     {
@@ -46,7 +50,7 @@ export default function Specialties() {
   ];
   
   return (
-    <section id="especialidades" className="py-24 bg-[#030303] overflow-hidden">
+    <section className="py-24 bg-[#030303] overflow-hidden">
       <div className="container mx-auto px-6">
         
         <motion.div 
@@ -97,9 +101,11 @@ export default function Specialties() {
                   whileHover={{ opacity: 0.4, scale: 1.05 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <motion.img 
+                  <MotionImage 
                     src={item.image}
                     alt={item.title}
+                    width={400}
+                    height={400}
                     className="w-[120%] h-[120%] object-contain filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                     animate={{ 
                       rotate: [0, 5, -5, 0],

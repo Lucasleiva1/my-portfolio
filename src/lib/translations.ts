@@ -8,7 +8,8 @@ export const translations = {
       services: "Servicios",
       contact: "Contacto",
       status: "Estado: Online",
-      year: "2024 Portfolio"
+      year: "2024 Portfolio",
+      subtitle: "Desarrollador Web"
     },
     // Hero
     hero: {
@@ -78,7 +79,8 @@ export const translations = {
       services: "Services",
       contact: "Contact",
       status: "Status: Online",
-      year: "2024 Portfolio"
+      year: "2024 Portfolio",
+      subtitle: "Web Developer"
     },
     hero: {
       brand: "FLOWGRAVITY",
@@ -142,7 +144,8 @@ export const translations = {
       services: "Serviços",
       contact: "Contato",
       status: "Status: Online",
-      year: "Portfólio 2024"
+      year: "Portfólio 2024",
+      subtitle: "Desenvolvedor Web"
     },
     hero: {
       brand: "FLOWGRAVITY",

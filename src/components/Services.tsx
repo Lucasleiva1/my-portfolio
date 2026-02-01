@@ -7,7 +7,7 @@ export default function Services() {
   const { t } = useLanguage();
   
   return (
-    <section id="servicios" className="relative min-h-[60vh] py-20 bg-[#030303] overflow-hidden flex items-center justify-center">
+    <section className="relative min-h-[60vh] py-20 bg-[#030303] overflow-hidden flex items-center justify-center">
       {/* Background Ambience */}
       <div className="absolute inset-0 bg-grid-white/[0.02] bg-[size:50px_50px]" />
       <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-lime-500/10 rounded-full blur-[100px] opacity-30" />
