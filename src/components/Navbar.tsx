@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Rocket } from "lucide-react";
+import Image from "next/image";
 import LanguageSelector from "./LanguageSelector";
 import { useLanguage } from "@/contexts/LanguageContext";
 
@@ -42,21 +42,19 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-        {/* Logo */}
+        {/* Logo - Sólo imagen */}
         <div 
           onClick={() => scrollToSection("inicio")}
-          className="flex items-center gap-2 cursor-pointer group"
+          className="flex items-center cursor-pointer group"
         >
-          <div className="w-10 h-10 bg-lime-400 rounded-xl flex items-center justify-center group-hover:shadow-[0_0_20px_rgba(163,230,53,0.5)] transition-all duration-300">
-            <Rocket className="w-6 h-6 text-black" />
-          </div>
-          <div className="flex flex-col leading-none">
-            <span className="text-xl font-bold text-white tracking-tighter">
-              FLOWGRAVITY
-            </span>
-            <span className="text-[10px] text-lime-400 font-mono tracking-widest uppercase opacity-70">
-              {t.nav.subtitle}
-            </span>
+          <div className="relative w-32 h-16 transition-transform duration-300 group-hover:scale-105">
+            <Image
+              src="/final-fg1.jpg"
+              alt="FlowGravity Logo"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         </div>
 
