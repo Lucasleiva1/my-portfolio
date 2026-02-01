@@ -112,10 +112,10 @@ export default function HeroGravity() {
 
 
   return (
-    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0 touch-action-pan-y" style={{ touchAction: 'pan-y' }}>
+    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0 pointer-events-none md:pointer-events-auto" style={{ touchAction: 'pan-y' }}>
       
       {/* CAPA 3D (El Canvas de React Three Fiber) */}
-      <div className="absolute inset-0 z-0 pointer-events-none md:pointer-events-auto">
+      <div className="absolute inset-0 z-0">
         <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
           <color attach="background" args={['#030303']} />
           <ambientLight intensity={0.5} />
