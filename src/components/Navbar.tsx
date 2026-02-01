@@ -47,12 +47,12 @@ const Navbar = () => {
           onClick={() => scrollToSection("inicio")}
           className="flex items-center cursor-pointer group"
         >
-          <div className="relative w-32 h-16 transition-transform duration-300 group-hover:scale-105">
+          <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-white/10 transition-transform duration-300 group-hover:scale-110 group-hover:border-lime-400/50">
             <Image
               src="/final-fg1.jpg"
               alt="FlowGravity Logo"
               fill
-              className="object-contain"
+              className="object-cover"
               priority
             />
           </div>
