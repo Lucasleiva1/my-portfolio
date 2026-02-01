@@ -116,7 +116,7 @@ export default function HeroGravity() {
       
       {/* CAPA 3D (El Canvas de React Three Fiber) - ELIMINADA EN MÓVIL POR SCROLL Y RENDIMIENTO */}
       {!isMobile && (
-        <div className="absolute inset-0 z-0 pointer-events-none">
+        <div className="hidden md:block absolute inset-0 z-0 pointer-events-none">
           <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
             <color attach="background" args={['#030303']} />
             <ambientLight intensity={0.5} />
@@ -128,8 +128,8 @@ export default function HeroGravity() {
 
       {/* CAPA DE UI (HTML sobre el 3D) */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center pointer-events-none">
-        {/* Título Principal */}
-        <div className="text-center mb-12 pointer-events-auto">
+        {/* Título Principal - Pasivo en móvil para permitir scroll */}
+        <div className="text-center mb-12 pointer-events-none md:pointer-events-auto">
            <span className="block text-4xl md:text-5xl font-bold bg-gradient-to-r from-lime-400 via-green-400 to-emerald-500 bg-clip-text text-transparent tracking-[0.2em] mb-2 drop-shadow-lg font-[family-name:var(--font-bungee)]">
               {t.hero.brand}
            </span>
@@ -140,8 +140,8 @@ export default function HeroGravity() {
              {t.hero.subtitle}
            </p>
 
-           {/* Iconos de Redes Sociales */}
-           <div className="flex items-center justify-center gap-4">
+           {/* Iconos de Redes Sociales - SIEMPRE INTERACTIVOS */}
+           <div className="flex items-center justify-center gap-4 pointer-events-auto">
              <motion.a 
                href="https://www.instagram.com/flow.gravity/"
                target="_blank"
@@ -182,8 +182,8 @@ export default function HeroGravity() {
            </div>
          </div>
 
-        {/* CONTROLADOR DE GRAVEDAD (Slider Personalizado) */}
-        <div className="pointer-events-auto bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 flex flex-col items-center w-80">
+        {/* CONTROLADOR DE GRAVEDAD - OCULTO EN MÓVIL POR SCROLL */}
+        <div className="hidden md:flex pointer-events-auto bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 flex-col items-center w-80">
           <label htmlFor="gravity-slider" className="text-lime-400 font-mono text-sm mb-4 uppercase tracking-widest flex items-center gap-2">
             <span className="relative flex h-3 w-3">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
