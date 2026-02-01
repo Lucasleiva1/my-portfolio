@@ -112,17 +112,19 @@ export default function HeroGravity() {
 
 
   return (
-    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0" style={{ touchAction: 'pan-y' }}>
+    <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0 pointer-events-none md:pointer-events-auto" style={{ touchAction: 'pan-y' }}>
       
-      {/* CAPA 3D (El Canvas de React Three Fiber) - TOTALMENTE PASIVA */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
-        <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
-          <color attach="background" args={['#030303']} />
-          <ambientLight intensity={0.5} />
-          {/* Pasamos el estado de la gravedad al sistema 3D */}
-          <HeroParticles gravityValue={gravity} isMobile={isMobile} />
-        </Canvas>
-      </div>
+      {/* CAPA 3D (El Canvas de React Three Fiber) - ELIMINADA EN MÓVIL POR SCROLL Y RENDIMIENTO */}
+      {!isMobile && (
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
+            <color attach="background" args={['#030303']} />
+            <ambientLight intensity={0.5} />
+            {/* Pasamos el estado de la gravedad al sistema 3D */}
+            <HeroParticles gravityValue={gravity} isMobile={isMobile} />
+          </Canvas>
+        </div>
+      )}
 
       {/* CAPA DE UI (HTML sobre el 3D) */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center pointer-events-none">
