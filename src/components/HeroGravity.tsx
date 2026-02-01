@@ -1,9 +1,11 @@
 "use client";
 
-import React from "react";
-import { motion } from "framer-motion";
-import { Instagram, Facebook } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { Canvas } from "@react-three/fiber";
+import { motion, AnimatePresence } from "framer-motion";
+import { Instagram, Facebook, ArrowRight } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
+import HeroParticles from "./HeroParticles";
 
 // Ícono personalizado de TikTok
 const TikTokIcon = () => (
@@ -15,18 +17,79 @@ const TikTokIcon = () => (
 // --- COMPONENTE PRINCIPAL DEL HERO ---
 export default function HeroGravity() {
   const { t } = useLanguage();
+  const [gravity, setGravity] = useState(0.2); 
+  const [showHint, setShowHint] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+  const animationRef = useRef<number | null>(null);
+  const userInteractedRef = useRef(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowHint(false), 4000);
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("resize", checkMobile);
+    };
+  }, []);
+
+  useEffect(() => {
+    let startTime: number;
+    const duration = 2500;
+    const startValue = 0.2;
+    const endValue = -0.20;
+
+    const animateGravity = (time: number) => {
+      if (userInteractedRef.current) {
+        if (animationRef.current) {
+          cancelAnimationFrame(animationRef.current);
+          animationRef.current = null;
+        }
+        return;
+      }
+      if (!startTime) startTime = time;
+      const progress = (time - startTime) / duration;
+      if (progress < 1) {
+        const ease = 1 - Math.pow(1 - progress, 3);
+        const newValue = startValue + (endValue - startValue) * ease;
+        setGravity(newValue);
+        animationRef.current = requestAnimationFrame(animateGravity);
+      } else {
+        setGravity(endValue);
+        animationRef.current = null;
+      }
+    };
+    animationRef.current = requestAnimationFrame(animateGravity);
+    return () => {
+      if (animationRef.current) cancelAnimationFrame(animationRef.current);
+    };
+  }, []);
+
+  const handleGravityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    userInteractedRef.current = true;
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+    setGravity(parseFloat(e.target.value));
+  };
 
   return (
     <section className="relative h-screen w-full bg-[#030303] overflow-hidden z-0" style={{ touchAction: 'pan-y' }}>
       
-      {/* BACKGROUND EFFECTS - Estáticos y ligeros */}
-      <div className="absolute inset-0 z-0">
-        {/* Resplandor central para profundidad */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-lime-500/10 blur-[120px] rounded-full opacity-50" />
+      {/* CAPA 3D (El Canvas de React Three Fiber) - ACTIVA PARA AMBOS, SIN INTERACCIÓN */}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <Canvas camera={{ position: [0, 0, 15], fov: 60 }}>
+          <color attach="background" args={['#030303']} />
+          <ambientLight intensity={0.5} />
+          <HeroParticles gravityValue={gravity} isMobile={isMobile} />
+          {/* OrbitControls ELIMINADO para evitar rotación y bloqueo de scroll */}
+        </Canvas>
         
-        {/* Grid Decorativo (Efecto Blueprint) */}
+        {/* Grid Decorativo opcional para más detalle */}
         <div 
-          className="absolute inset-0 opacity-[0.05]" 
+          className="absolute inset-0 opacity-[0.03] pointer-events-none" 
           style={{ 
             backgroundImage: 'radial-gradient(#ffffff 1px, transparent 1px)', 
             backgroundSize: '40px 40px' 
@@ -35,9 +98,9 @@ export default function HeroGravity() {
       </div>
 
       {/* CAPA DE UI */}
-      <div className="relative z-10 h-full flex flex-col items-center justify-center">
+      <div className="relative z-10 h-full flex flex-col items-center justify-center pointer-events-none">
         {/* Título Principal */}
-        <div className="text-center mb-12 px-6">
+        <div className="text-center mb-12 px-6 pointer-events-none md:pointer-events-auto">
            <motion.span 
              initial={{ opacity: 0, y: 20 }}
              animate={{ opacity: 1, y: 0 }}
@@ -69,7 +132,7 @@ export default function HeroGravity() {
              initial={{ opacity: 0, scale: 0.8 }}
              animate={{ opacity: 1, scale: 1 }}
              transition={{ delay: 0.3 }}
-             className="flex items-center justify-center gap-6"
+             className="flex items-center justify-center gap-6 pointer-events-auto"
            >
              <motion.a 
                href="https://www.instagram.com/flow.gravity/"
@@ -110,22 +173,57 @@ export default function HeroGravity() {
              </motion.a>
            </motion.div>
          </div>
-      </div>
 
-      {/* Indicador de Desplazamiento (Opcional pero ayuda a la UX) */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1, duration: 1 }}
-        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-gray-500 uppercase tracking-[0.3em] text-[10px]"
-      >
-        <span>Scroll</span>
-        <motion.div 
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="w-px h-12 bg-gradient-to-b from-lime-400 to-transparent"
-        />
-      </motion.div>
+        {/* CONTROLADOR DE GRAVEDAD - ACTIVO EN AMBOS PERO SIN BLOQUEAR SCROLL */}
+        <div className="pointer-events-auto bg-white/5 backdrop-blur-xl p-6 rounded-3xl border border-white/10 flex flex-col items-center w-80">
+          <label htmlFor="gravity-slider" className="text-lime-400 font-mono text-sm mb-4 uppercase tracking-widest flex items-center gap-2">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-lime-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-lime-500"></span>
+            </span>
+            {t.hero.gravityModulator}
+          </label>
+          
+          <div className="relative w-full flex items-center gap-4">
+             <span className="text-xs text-gray-500 font-mono">{t.hero.fall}</span>
+            <input
+              id="gravity-slider"
+              type="range"
+              min="-1"
+              max="1"
+              step="0.01"
+              value={gravity}
+              onChange={handleGravityChange}
+              className="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-lime-500 outline-none
+              [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-6 [&::-webkit-slider-thumb]:h-6 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-lime-400 [&::-webkit-slider-thumb]:border-4 [&::-webkit-slider-thumb]:border-[#030303] [&::-webkit-slider-thumb]:shadow-[0_0_20px_rgba(163,230,53,0.5)]"
+            />
+            <span className="text-xs text-lime-400 font-mono">{t.hero.rise}</span>
+            
+            <AnimatePresence>
+              {showHint && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ 
+                    opacity: 1, 
+                    x: [0, 5, 0],
+                  }}
+                  exit={{ opacity: 0, scale: 0 }}
+                  transition={{ 
+                    opacity: { duration: 0.5 },
+                    x: { repeat: Infinity, duration: 1, ease: "easeInOut" }
+                  }}
+                  className="absolute -right-8 text-lime-400"
+                >
+                  <ArrowRight className="w-5 h-5" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+           <div className="text-center text-white font-mono mt-2 text-xs">
+              {t.hero.gravity}: {gravity.toFixed(2)}G
+           </div>
+        </div>
+      </div>
     </section>
   );
 }
